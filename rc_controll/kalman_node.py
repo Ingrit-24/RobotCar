@@ -47,6 +47,7 @@ class KalmanNode(Node):
             self.X[3]=msg.vel_ecef.x
             self.X[4]=msg.vel_ecef.y
             self.X[5]=msg.vel_ecef.z
+            return 0
 
             #パブリッシュ
         self.A[0,3]=dt
@@ -70,21 +71,21 @@ class KalmanNode(Node):
         self.R[2,1]=msg.pos_cov_ecef[7]
         self.R[2,2]=msg.pos_cov_ecef[8]
 
-        self.R[3,3]=msg.pos_cov_ecef[0]
-        self.R[3,4]=msg.pos_cov_ecef[1]
-        self.R[3,5]=msg.pos_cov_ecef[2]
-        self.R[4,3]=msg.pos_cov_ecef[3]
-        self.R[4,4]=msg.pos_cov_ecef[4]
-        self.R[4,5]=msg.pos_cov_ecef[5]
-        self.R[5,3]=msg.pos_cov_ecef[6]
-        self.R[5,4]=msg.pos_cov_ecef[7]
-        self.R[5,5]=msg.pos_cov_ecef[8]
+        self.R[3,3]=msg.vel_cov_ecef[0]
+        self.R[3,4]=msg.vel_cov_ecef[1]
+        self.R[3,5]=msg.vel_cov_ecef[2]
+        self.R[4,3]=msg.vel_cov_ecef[3]
+        self.R[4,4]=msg.vel_cov_ecef[4]
+        self.R[4,5]=msg.vel_cov_ecef[5]
+        self.R[5,3]=msg.vel_cov_ecef[6]
+        self.R[5,4]=msg.vel_cov_ecef[7]
+        self.R[5,5]=msg.vel_cov_ecef[8]
 
         preX = self.A @ self.X
         self.P = self.A @ self.P @ self.A.T + self.Q
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
-        self.X = preX + K @ (self.Xm-self.X)
+        self.X = preX + K @ (self.Xm-preX)
         self.P = self.P - K @ self.H @ self.P
 
         pos_msg = Point()
