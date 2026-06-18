@@ -29,24 +29,26 @@ def generate_launch_description():
         Node(
             package='gnss_ros_standardization',
             executable='real_time_kinematic',
-            name='RTK',
+            name='real_time_kinematic',
             output='screen',
             parameters=[yaml_file_path]
         ),
         Node(
             package='gnss_ros_standardization',
             executable='rtcm_decoder_node',
-            name='getdata',
-            output='screen',
+            name='rtcm_decoder_node',
+            output='log',
             parameters=[{
-                'stream_path': ntrip
+                'stream_path': ntrip,
+                'observation_topic':"/base/gnss/observation",
+                'ephemeris_topic':"/base/gnss/ephemeris",
             }]
         ),
         Node(
             package='gnss_ros_standardization',
             executable='ubx_driver_node',
-            name='getdata',
-            output='screen',
+            name='ubx_driver_node',
+            output='log',
             parameters=[ubx_file2]
         ),
     ])

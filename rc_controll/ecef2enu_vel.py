@@ -11,7 +11,7 @@ class Ecef2enu(Node):
         self.sub = self.create_subscription(Point,'/Kalman_out_vel',self.convert,10)
         self.pub = self.create_publisher(Point,'/vel_enu',10)
 
-        self.base_llh = np.array([35.68775506,140.01992439,88.6451])
+        self.base_llh = np.array([35.69010481,140.02119201,52.07312653])
         self.base_ecef = pos2ecef(self.base_llh,isdeg=True)
 
     def convert(self,msg):
