@@ -29,6 +29,7 @@ setup(
         'console_scripts': [
         'Kalman_Node = rc_controll.kalman_node:main',
         'Ecef2Enu_Node = rc_controll.ecef2enu:main',
+        'Ecef2Enu_vel_Node = rc_controll.ecef2enu_vel:main'
         ],
     },
 )
