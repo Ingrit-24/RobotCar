@@ -19,12 +19,12 @@ class KalmanNode(Node):
         self.pasttime=0
         self.Q=np.zeros((6,6))
 
-        self.Q[0,0]=0.01
-        self.Q[1,1]=0.01
-        self.Q[2,2]=0.01
-        self.Q[3,3]=0.1
-        self.Q[4,4]=0.1
-        self.Q[5,5]=0.1
+        self.Q[0,0]=0.02
+        self.Q[1,1]=0.02
+        self.Q[2,2]=0.02
+        self.Q[3,3]=0.2
+        self.Q[4,4]=0.2
+        self.Q[5,5]=0.2
 
         self.P=np.eye(6)
         self.X=np.zeros(6)
@@ -47,9 +47,8 @@ class KalmanNode(Node):
             self.X[3]=msg.vel_ecef.x
             self.X[4]=msg.vel_ecef.y
             self.X[5]=msg.vel_ecef.z
-            return 0
+            return 
 
-            #パブリッシュ
         self.A[0,3]=dt
         self.A[1,4]=dt
         self.A[2,5]=dt
@@ -82,7 +81,7 @@ class KalmanNode(Node):
         self.R[5,5]=msg.vel_cov_ecef[8]
 
         preX = self.A @ self.X
-        self.P = self.A @ self.P @ self.A.T + self.Q
+        self.P = self.A @ self.P @ self.A.T + self.Q*dt
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
         self.X = preX + K @ (self.Xm-preX)
