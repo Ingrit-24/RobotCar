@@ -4,31 +4,113 @@ import csv
 import os
 from rclpy.node import Node
 from ament_index_python.packages import get_package_share_directory
+from ackermann_msgs.msg import AckermannDriveStamped
 from geometry_msgs.msg import Point
 from std_msgs.msg import Float64
 
 class Controll(Node):
     def __init__(self):
-        super().__init__('controll')
+        super().__init__('Controll_Node')
 
         self.KP = 1
         self.KI = 0.5
+        self.KP_V = 1
+        self.KI_V = 0.5
+        self.Vg = 1.5
+        
+        
         self.inte = 0
+        self.inte_v = 0
         self.base_vel = 2.0
+        self.rad25 = np.deg2rad(25)
+        
+        self.robo_pos = np.zeros(3) #enu
+        self.robo_vel = np.zeros(3)
+        self.delta_t = 0
+        
+        self.sub_pos = self.create_subscription(Point,'/pos_enu',self.update_pos,10)
+        self.sub_vel = self.create_subscription(Point,'/vel_enu',self.update_vel,10)
+        self.sub_dt = self.create_subscription(Float64,'/Kalman_out_dt',self.update_dt,10)
+        self.pub = self.create_publisher(AckermannDriveStamped,'/ackermann_cmd',10)
+        
+        self.renew_flag = 0
         
         package_share_dir = get_package_share_directory('rc_controll')
         csv_path = os.path.join(package_share_dir, 'data/route.csv')
         self.route = self.get_route(csv_path)
+        self.route_max = len(self.route)
         
+        self.timer = self.create_timer(0.01, self.controll)
     
     def get_route(self,filepass):
         with open(f'{filepass}','r',encoding='utf-8') as f:
             reader = csv.reader(f)
-            list = [row for row in reader]
+            list = [[float(val) for val in row] for row in reader]
         return np.array(list)
     
+    def update_pos(self,msg):
+        self.robo_pos[0] = msg.x
+        self.robo_pos[1] = msg.y
+        self.robo_pos[2] = msg.z
+        self.renew_flag = 1
+        return
     
+    def update_vel(self,msg):
+        self.robo_vel[0] = msg.x
+        self.robo_vel[1] = msg.y
+        self.robo_vel[2] = msg.z
+        self.renew_flag = 1
+        return
     
+    def update_dt(self,msg):
+        self.delta_t = msg
+    
+    def controll(self):
+        if self.renew_flag == 0:
+            return 
+        
+        self.renew_flag = 0
+        
+        norms = np.linalg.norm(self.route - self.robo_pos,axis=1)
+        minidx = np.argmin(norms)
+        
+        if minidx > self.route_max - 4:
+            goalidx = 3-(self.route_max - minidx)
+        else:
+            goalidx = minidx + 3
+        
+        routex = self.route[goalidx] - self.route[minidx] 
+        goaltheta = np.atan2(routex[0],routex[1])
+        theta = np.atan2(self.robo_vel[0],self.robo_vel[1])
+        
+        if goaltheta > 0 and theta < 0:
+            ds = 2*np.pi + goaltheta + theta
+        elif goaltheta < 0 and theta > 0:
+            ds = 2*np.pi + goaltheta - theta
+        else:
+            ds = goaltheta - theta
+        self.inte += ds * self.delta_t
+        output_s = ds * self.KP + self.inte * self.KI 
+        
+        
+        if output_s > self.rad25:
+            output_s = self.rad25
+        if output_s < -self.rad25:
+            output_s = -self.rad25
+        
+        v = np.linalg.norm([self.robo_vel[0],self.robo_vel[1]])
+        dv = self.Vg - v - self.Vg * np.sin(ds)**2
+        self.inte_v += dv *self.delta_t
+        output_v = dv * self.KP_V + self.inte_v * self.KI_V 
+        
+        if output_v > 3.0:
+            output_v = 3.0
+        
+        out = AckermannDriveStamped()
+        out.drive.steering_angle = output_s
+        out.drive.speed = output_v
+        self.pub.publish(out)
+            
     
         
 def main(args=None):
