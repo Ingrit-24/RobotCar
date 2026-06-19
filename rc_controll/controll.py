@@ -63,7 +63,7 @@ class Controll(Node):
         return
     
     def update_dt(self,msg):
-        self.delta_t = msg
+        self.delta_t = msg.data
     
     def controll(self):
         if self.renew_flag == 0:
