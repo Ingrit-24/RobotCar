@@ -25,8 +25,8 @@ class Ecef2enu(Node):
         
         msg_enu = Point()
         msg_enu.x = enux[0]
-        msg_enu.x = enux[1] 
-        msg_enu.x = enux[2]
+        msg_enu.y = enux[1] 
+        msg_enu.z = enux[2]
 
         self.pub_pos.publish(msg_enu)
         self.get_logger().info(f'Pos:{enux}')
@@ -38,8 +38,8 @@ class Ecef2enu(Node):
         
         msg_enu = Point()
         msg_enu.x = enux[0]
-        msg_enu.x = enux[1] 
-        msg_enu.x = enux[2]
+        msg_enu.y = enux[1] 
+        msg_enu.z = enux[2]
 
         self.pub_vel.publish(msg_enu)
         self.get_logger().info(f'Vel:{enux}')

@@ -12,16 +12,16 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 1
-        self.KI = 0.5
-        self.KP_V = 1
-        self.KI_V = 0.5
+        self.KP = -0.02
+        self.KI = -0.001
+        self.KP_V = 0.3
+        self.KI_V = 0.01
         self.Vg = 1.5
         
         
         self.inte = 0
         self.inte_v = 0
-        self.base_vel = 2.0
+        self.base_vel = 1.0
         self.rad25 = np.deg2rad(25)
         
         self.robo_pos = np.zeros(3) #enu
@@ -41,7 +41,8 @@ class Controll(Node):
         self.route_max = len(self.route)
         
         self.timer = self.create_timer(0.01, self.controll)
-    
+        self.get_logger().info(f"route shape: {self.route.shape}, robo_pos shape: {self.robo_pos.shape}")
+
     def get_route(self,filepass):
         with open(f'{filepass}','r',encoding='utf-8') as f:
             reader = csv.reader(f)
@@ -53,6 +54,7 @@ class Controll(Node):
         self.robo_pos[1] = msg.y
         self.robo_pos[2] = msg.z
         self.renew_flag = 1
+        self.get_logger().info(f"{self.robo_pos}")
         return
     
     def update_vel(self,msg):
@@ -71,7 +73,7 @@ class Controll(Node):
         
         self.renew_flag = 0
         
-        norms = np.linalg.norm(self.route - self.robo_pos,axis=1)
+        norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
         if minidx > self.route_max - 4:
@@ -80,18 +82,16 @@ class Controll(Node):
             goalidx = minidx + 3
         
         routex = self.route[goalidx] - self.route[minidx] 
-        goaltheta = np.atan2(routex[0],routex[1])
-        theta = np.atan2(self.robo_vel[0],self.robo_vel[1])
+        goaltheta = np.arctan2(routex[0],routex[1])
+        theta = np.arctan2(self.robo_vel[0],self.robo_vel[1])
         
-        if goaltheta > 0 and theta < 0:
-            ds = 2*np.pi + goaltheta + theta
-        elif goaltheta < 0 and theta > 0:
-            ds = 2*np.pi + goaltheta - theta
-        else:
-            ds = goaltheta - theta
+        self.get_logger().info(f'kaku: {np.rad2deg(theta)}')
+        ds = np.arctan2(np.sin(goaltheta - theta), np.cos(goaltheta - theta))
+
         self.inte += ds * self.delta_t
         output_s = ds * self.KP + self.inte * self.KI 
         
+        self.get_logger().info(f'現在のインデックス: {minidx}, 目標インデックス: {goalidx}')
         
         if output_s > self.rad25:
             output_s = self.rad25

@@ -13,6 +13,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
+        (os.path.join('share', package_name, 'data'), ['data/route.csv']),
     ],
     install_requires=['setuptools','numpy','cssrlib'],
     zip_safe=True,
@@ -29,6 +30,7 @@ setup(
         'console_scripts': [
         'Kalman_Node = rc_controll.kalman_node:main',
         'Ecef2Enu_Node = rc_controll.ecef2enu:main',
+        'Controll_Node = rc_controll.controll:main',
         ],
     },
 )
