@@ -40,6 +40,12 @@ class Controll(Node):
         self.route = self.get_route(csv_path)
         self.route_max = len(self.route)
         
+        self.theta = np.arctan2(self.route[1,1]-self.route[0,1],self.route[1,0]-self.route[0,0])
+        out = AckermannDriveStamped()
+        out.drive.steering_angle = 0
+        out.drive.speed = 1.0
+        self.pub.publish(out)
+        
         self.timer = self.create_timer(0.01, self.controll)
         self.get_logger().info(f"route shape: {self.route.shape}, robo_pos shape: {self.robo_pos.shape}")
 
@@ -81,17 +87,17 @@ class Controll(Node):
         else:
             goalidx = minidx + 3
         
-        routex = self.route[goalidx] - self.route[minidx] 
-        goaltheta = np.arctan2(routex[0],routex[1])
-        theta = np.arctan2(self.robo_vel[0],self.robo_vel[1])
+        routex = self.route[goalidx] - self.robo_pos 
+        goaltheta = np.arctan2(routex[1],routex[0])
+        self.theta = np.arctan2(self.robo_vel[1],self.robo_vel[0])
         
-        self.get_logger().info(f'kaku: {np.rad2deg(theta)}')
-        ds = np.arctan2(np.sin(goaltheta - theta), np.cos(goaltheta - theta))
-
+        ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
+        self.get_logger().info(f'Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
+        self.get_logger().info(f'ds{np.rad2deg(ds)}')
+         
         self.inte += ds * self.delta_t
         output_s = ds * self.KP + self.inte * self.KI 
         
-        self.get_logger().info(f'現在のインデックス: {minidx}, 目標インデックス: {goalidx}')
         
         if output_s > self.rad25:
             output_s = self.rad25
@@ -99,7 +105,7 @@ class Controll(Node):
             output_s = -self.rad25
         
         v = np.linalg.norm([self.robo_vel[0],self.robo_vel[1]])
-        dv = self.Vg - v - self.Vg * np.sin(ds)**2
+        dv = self.Vg*(1-np.sin(ds)**2)-v
         self.inte_v += dv *self.delta_t
         output_v = dv * self.KP_V + self.inte_v * self.KI_V 
         
