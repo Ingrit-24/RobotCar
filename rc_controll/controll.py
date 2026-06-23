@@ -14,8 +14,6 @@ class Controll(Node):
 
         self.KP = 0.8
         self.KI = 0.00
-        self.KP_V = 0.8
-        self.KI_V = 0.01
         self.Vg = 1.5
         
         
@@ -107,7 +105,7 @@ class Controll(Node):
         v = np.linalg.norm([self.robo_vel[0],self.robo_vel[1]])
         dv = self.Vg*(1-np.sin(ds)**2)-v
         self.inte_v += dv *self.delta_t
-        output_v = dv * self.KP_V + self.inte_v * self.KI_V 
+
         
         if output_v > 3.0:
             output_v = 3.0
