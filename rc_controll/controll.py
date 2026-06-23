@@ -12,9 +12,9 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.2
-        self.KI = 0.001
-        self.Vg = 0.6
+        self.KP = 0.225
+        self.KI = 0.005
+        self.Vg = 0.7
         
         
         self.inte = 0
@@ -32,7 +32,7 @@ class Controll(Node):
         self.renew_flag = 0
         
         package_share_dir = get_package_share_directory('rc_controll')
-        csv_path = os.path.join(package_share_dir, 'data/route.csv')
+        csv_path = os.path.join(package_share_dir, 'data/advance.csv')
         self.route = self.get_route(csv_path)
         self.route_max = len(self.route)
         
