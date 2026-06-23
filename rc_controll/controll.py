@@ -18,7 +18,6 @@ class Controll(Node):
         
         
         self.inte = 0
-        self.inte_v = 0
         self.base_vel = 1.0
         self.rad25 = np.deg2rad(25)
         
@@ -103,12 +102,7 @@ class Controll(Node):
             output_s = -self.rad25
         
         v = np.linalg.norm([self.robo_vel[0],self.robo_vel[1]])
-        dv = self.Vg*(1-np.sin(ds)**2)-v
-        self.inte_v += dv *self.delta_t
-
         
-        if output_v > 3.0:
-            output_v = 3.0
         
         out = AckermannDriveStamped()
         if v < 0.40:
