@@ -12,9 +12,9 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.8
-        self.KI = 0.00
-        self.Vg = 1.5
+        self.KP = 0.2
+        self.KI = 0.001
+        self.Vg = 0.6
         
         
         self.inte = 0
@@ -109,7 +109,7 @@ class Controll(Node):
             out.drive.steering_angle = 0.0
         else:
             out.drive.steering_angle = output_s
-        out.drive.speed = 0.6
+        out.drive.speed = self.Vg
         self.pub.publish(out)
         self.get_logger().info(f'OUT:{out.drive.steering_angle}')
     
