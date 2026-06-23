@@ -18,7 +18,6 @@ class Controll(Node):
         
         
         self.inte = 0
-        self.base_vel = 1.0
         self.rad25 = np.deg2rad(25)
         
         self.robo_pos = np.zeros(3) #enu
