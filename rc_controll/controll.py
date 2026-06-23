@@ -12,9 +12,9 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = -0.02
-        self.KI = -0.001
-        self.KP_V = 0.3
+        self.KP = 0.8
+        self.KI = 0.00
+        self.KP_V = 0.8
         self.KI_V = 0.01
         self.Vg = 1.5
         
@@ -42,8 +42,8 @@ class Controll(Node):
         
         self.theta = np.arctan2(self.route[1,1]-self.route[0,1],self.route[1,0]-self.route[0,0])
         out = AckermannDriveStamped()
-        out.drive.steering_angle = 0
-        out.drive.speed = 1.0
+        out.drive.steering_angle = 0.0
+        out.drive.speed = 1.5
         self.pub.publish(out)
         
         self.timer = self.create_timer(0.01, self.controll)
@@ -92,7 +92,7 @@ class Controll(Node):
         self.theta = np.arctan2(self.robo_vel[1],self.robo_vel[0])
         
         ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
-        self.get_logger().info(f'Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
+        self.get_logger().info(f'Nowind:{minidx} Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
         self.get_logger().info(f'ds{np.rad2deg(ds)}')
          
         self.inte += ds * self.delta_t
@@ -113,10 +113,13 @@ class Controll(Node):
             output_v = 3.0
         
         out = AckermannDriveStamped()
-        out.drive.steering_angle = output_s
-        out.drive.speed = output_v
+        if v < 0.40:
+            out.drive.steering_angle = 0.0
+        else:
+            out.drive.steering_angle = output_s
+        out.drive.speed = 0.6
         self.pub.publish(out)
-            
+        self.get_logger().info(f'OUT:{out.drive.steering_angle}')
     
         
 def main(args=None):
