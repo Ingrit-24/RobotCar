@@ -29,6 +29,7 @@ setup(
     entry_points={
         'console_scripts': [
         'Kalman_Node = rc_controll.kalman_node:main',
+        'Kalman2_Node = rc_controll.kalman2_node:main',
         'Ecef2Enu_Node = rc_controll.ecef2enu:main',
         'Controll_Node = rc_controll.controll:main',
         'circle_publisher = rc_controll.dammy:main',

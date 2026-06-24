@@ -17,14 +17,21 @@ class KalmanNode(Node):
 
 
         self.pasttime=0
-        self.Q=np.zeros((6,6))
+        self.Q=np.zeros((2,6,6))
 
-        self.Q[0,0]=0.02
-        self.Q[1,1]=0.02
-        self.Q[2,2]=0.02
-        self.Q[3,3]=0.1
-        self.Q[4,4]=0.1
-        self.Q[5,5]=0.1
+        self.Q[0,0,0]=0.02
+        self.Q[0,1,1]=0.02
+        self.Q[0,2,2]=0.02
+        self.Q[0,3,3]=0.1
+        self.Q[0,4,4]=0.1
+        self.Q[0,5,5]=0.1
+        
+        self.Q[1,0,0]=0.0002
+        self.Q[1,1,1]=0.0002
+        self.Q[1,2,2]=0.0002
+        self.Q[1,3,3]=0.05
+        self.Q[1,4,4]=0.05
+        self.Q[1,5,5]=0.05
 
         self.P=np.eye(6)
         self.X=np.zeros(6)
@@ -79,9 +86,22 @@ class KalmanNode(Node):
         self.R[5,3]=msg.vel_cov_ecef[6]
         self.R[5,4]=msg.vel_cov_ecef[7]
         self.R[5,5]=msg.vel_cov_ecef[8]
-
+        
+        if msg.status == 1:
+            mode = 0
+        else:
+            mode = 1
+        
+        Q_current = np.zeros((6, 6))
+        Q_current[0, 0] = self.Q[mode, 0, 0] * dt
+        Q_current[1, 1] = self.Q[mode, 1, 1] * dt
+        Q_current[2, 2] = self.Q[mode, 2, 2] * dt
+        Q_current[3, 3] = self.Q[mode, 3, 3] * dt
+        Q_current[4, 4] = self.Q[mode, 4, 4] * dt
+        Q_current[5, 5] = self.Q[mode, 5, 5] * dt
+        
         preX = self.A @ self.X
-        self.P = self.A @ self.P @ self.A.T + self.Q*dt
+        self.P = self.A @ self.P @ self.A.T + Q_current
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
         self.X = preX + K @ (self.Xm-preX)
