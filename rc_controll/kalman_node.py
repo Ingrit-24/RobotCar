@@ -15,8 +15,8 @@ class KalmanNode(Node):
         self.pub_vel = self.create_publisher(Point,'/Kalman_out_vel',10)
         self.pub_dt = self.create_publisher(Float64,'/Kalman_out_dt',10)
 
-
-        self.pasttime=0
+        
+        self.pasttime = None  
         self.Q=np.zeros((6,6))
 
         self.Q[0,0]=0.02
@@ -35,12 +35,15 @@ class KalmanNode(Node):
         self.Xm = np.zeros(6)
 
     def kalmanfilter(self,msg):
-        if self.pasttime != 0:
-            dt = msg.time_tow - self.pasttime
-            self.pasttime = msg.time_tow
-        else :
-            self.pasttime=msg.time_tow
-            dt=0
+        current_time = self.get_clock().now()
+        if self.pasttime is not None:
+            dt = (current_time - self.pasttime).nanoseconds / 1e9
+            self.pasttime = current_time
+            if dt <= 0.0:
+                dt = 0.2
+        else:
+            self.pasttime = current_time
+            dt = 0.2
             self.X[0]=msg.pos_ecef.x
             self.X[1]=msg.pos_ecef.y
             self.X[2]=msg.pos_ecef.z
