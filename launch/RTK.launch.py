@@ -31,7 +31,7 @@ def generate_launch_description():
             executable='real_time_kinematic',
             name='real_time_kinematic',
             output='screen',
-            parameters=[yaml_file_path]
+            parameters=[yaml_file_path],
         ),
         Node(
             package='gnss_ros_standardization',
@@ -42,13 +42,13 @@ def generate_launch_description():
                 'stream_path': ntrip,
                 'observation_topic':"/base/gnss/observation",
                 'ephemeris_topic':"/base/gnss/ephemeris",
-            }]
+            }],
         ),
         Node(
             package='gnss_ros_standardization',
             executable='ubx_driver_node',
             name='ubx_driver_node',
             output='log',
-            parameters=[ubx_file2]
+            parameters=[ubx_file2],
         ),
     ])

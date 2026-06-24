@@ -28,15 +28,11 @@ def generate_launch_description():
         Node(
             package='gnss_ros_standardization',
             executable='single_point_positioning',
-            name='jyusin',
-            output='screen',
             parameters=[yaml_file_path]
         ),
         Node(
             package='gnss_ros_standardization',    
             executable='rtcm_decoder_node', 
-            name='getdata',
-            output='screen',
             parameters=[{
                 'stream_path': ntrip
             }]
