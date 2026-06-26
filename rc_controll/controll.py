@@ -12,9 +12,9 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.225
-        self.KI = 0.005
-        self.Vg = 0.7
+        self.KP = 0.21
+        self.KI = 0.0015
+        self.Vg = 0.9
         
         
         self.inte = 0
@@ -42,7 +42,7 @@ class Controll(Node):
         out.drive.speed = 1.5
         self.pub.publish(out)
         
-        self.timer = self.create_timer(0.01, self.controll)
+        self.timer = self.create_timer(0.02, self.controll)
         self.get_logger().info(f"route shape: {self.route.shape}, robo_pos shape: {self.robo_pos.shape}")
 
     def get_route(self,filepass):
@@ -90,8 +90,14 @@ class Controll(Node):
         ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
         self.get_logger().info(f'Nowind:{minidx} Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
         self.get_logger().info(f'ds{np.rad2deg(ds)}')
-         
+        
         self.inte += ds * self.delta_t
+        
+        if self.inte > 50 :
+            self.inte = 50
+        elif self.inte < -50 :
+            self.inte = -50
+
         output_s = ds * self.KP + self.inte * self.KI 
         
         

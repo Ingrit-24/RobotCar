@@ -29,9 +29,9 @@ class KalmanNode(Node):
         self.Q[1,0,0]=0.0002
         self.Q[1,1,1]=0.0002
         self.Q[1,2,2]=0.0002
-        self.Q[1,3,3]=0.05
-        self.Q[1,4,4]=0.05
-        self.Q[1,5,5]=0.05
+        self.Q[1,3,3]=0.1
+        self.Q[1,4,4]=0.1
+        self.Q[1,5,5]=0.1
 
         self.P=np.eye(6)
         self.X=np.zeros(6)
