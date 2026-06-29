@@ -78,10 +78,10 @@ class Controll(Node):
         norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
-        if minidx > self.route_max - 9:
-            goalidx = 8-(self.route_max - minidx)
+        if minidx > self.route_max - 6:
+            goalidx = 5-(self.route_max - minidx)
         else:
-            goalidx = minidx + 8
+            goalidx = minidx + 5
         
         routex = self.route[goalidx] - self.robo_pos 
         goaltheta = np.arctan2(routex[1],routex[0])
