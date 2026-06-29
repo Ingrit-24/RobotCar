@@ -12,9 +12,9 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.21
-        self.KI = 0.0015
-        self.Vg = 0.9
+        self.KP = 0.225
+        self.KI = 0.0025
+        self.Vg = 1.0
         
         
         self.inte = 0
@@ -32,7 +32,7 @@ class Controll(Node):
         self.renew_flag = 0
         
         package_share_dir = get_package_share_directory('rc_controll')
-        csv_path = os.path.join(package_share_dir, 'data/advance.csv')
+        csv_path = os.path.join(package_share_dir, 'data/route.csv')
         self.route = self.get_route(csv_path)
         self.route_max = len(self.route)
         
@@ -78,10 +78,10 @@ class Controll(Node):
         norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
-        if minidx > self.route_max - 4:
-            goalidx = 3-(self.route_max - minidx)
+        if minidx > self.route_max - 9:
+            goalidx = 8-(self.route_max - minidx)
         else:
-            goalidx = minidx + 3
+            goalidx = minidx + 8
         
         routex = self.route[goalidx] - self.robo_pos 
         goaltheta = np.arctan2(routex[1],routex[0])
