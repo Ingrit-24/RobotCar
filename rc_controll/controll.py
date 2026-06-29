@@ -12,9 +12,10 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.225
-        self.KI = 0.0025
-        self.Vg = 1.0
+        self.KP = 0.185
+        self.KI = 0.008
+        self.KD = 0.0002
+        self.Vg = 1.5
         
         
         self.inte = 0
@@ -23,6 +24,7 @@ class Controll(Node):
         self.robo_pos = np.zeros(3) #enu
         self.robo_vel = np.zeros(3)
         self.delta_t = 0
+        self.dsp = 0
         
         self.sub_pos = self.create_subscription(Point,'/pos_enu',self.update_pos,10)
         self.sub_vel = self.create_subscription(Point,'/vel_enu',self.update_vel,10)
@@ -63,7 +65,6 @@ class Controll(Node):
         self.robo_vel[0] = msg.x
         self.robo_vel[1] = msg.y
         self.robo_vel[2] = msg.z
-        self.renew_flag = 1
         return
     
     def update_dt(self,msg):
@@ -78,27 +79,29 @@ class Controll(Node):
         norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
-        if minidx > self.route_max - 6:
-            goalidx = 5-(self.route_max - minidx)
+        if minidx > self.route_max - 9:
+            goalidx = 8-(self.route_max - minidx)
         else:
-            goalidx = minidx + 5
+            goalidx = minidx + 8
         
         routex = self.route[goalidx] - self.robo_pos 
         goaltheta = np.arctan2(routex[1],routex[0])
         self.theta = np.arctan2(self.robo_vel[1],self.robo_vel[0])
         
+        
         ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
         self.get_logger().info(f'Nowind:{minidx} Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
         self.get_logger().info(f'ds{np.rad2deg(ds)}')
+        dsd = (ds-self.dsp)/self.delta_t
         
         self.inte += ds * self.delta_t
         
-        if self.inte > 50 :
-            self.inte = 50
-        elif self.inte < -50 :
-            self.inte = -50
+        if self.inte > 25 :
+            self.inte = 25
+        elif self.inte < -25 :
+            self.inte = -25
 
-        output_s = ds * self.KP + self.inte * self.KI 
+        output_s = ds * self.KP + self.inte * self.KI + dsd * self.KD
         
         
         if output_s > self.rad25:
@@ -114,9 +117,10 @@ class Controll(Node):
             out.drive.steering_angle = 0.0
         else:
             out.drive.steering_angle = output_s
-        out.drive.speed = self.Vg
+        out.drive.speed = (1-np.sin(ds/2)**2)*self.Vg
         self.pub.publish(out)
         self.get_logger().info(f'OUT:{out.drive.steering_angle}')
+        self.dsp=ds
     
         
 def main(args=None):
