@@ -96,10 +96,10 @@ class Controll(Node):
         
         self.inte += ds * self.delta_t
         
-        if self.inte > 25 :
-            self.inte = 25
-        elif self.inte < -25 :
-            self.inte = -25
+        if self.inte > 8 :
+            self.inte = 8
+        elif self.inte < -8 :
+            self.inte = -8
 
         output_s = ds * self.KP + self.inte * self.KI + dsd * self.KD
         
