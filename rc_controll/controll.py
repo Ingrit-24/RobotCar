@@ -12,7 +12,7 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.185
+        self.KP = 0.15
         self.KI = 0.008
         self.KD = 0.0002
         self.Vg = 1.5
