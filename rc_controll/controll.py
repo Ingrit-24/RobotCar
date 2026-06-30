@@ -1,3 +1,4 @@
+
 import rclpy
 import numpy as np
 import csv
@@ -13,8 +14,8 @@ class Controll(Node):
         super().__init__('Controll_Node')
 
         self.KP = 0.17
-        self.KI = 0.0012
-        self.KD = 0.0003
+        self.KI = 0.0007
+        self.KD = 0.00035
         self.Vg = 1.5
         
         
@@ -90,8 +91,6 @@ class Controll(Node):
         
         
         ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
-        self.get_logger().info(f'Nowind:{minidx} Now:{np.rad2deg(self.theta)} Goal:{np.rad2deg(goaltheta)}')
-        self.get_logger().info(f'ds{np.rad2deg(ds)}')
         dsd = (ds-self.dsp)/self.delta_t
         
         self.inte += ds * self.delta_t
@@ -102,7 +101,7 @@ class Controll(Node):
             self.inte = -8
 
         output_s = ds * self.KP + self.inte * self.KI + dsd * self.KD
-        
+        self.get_logger().info(f'P:{ds * self.KP},I:{self.inte * self.KI},D:{dsd * self.KD}')
         
         if output_s > self.rad25:
             output_s = self.rad25
@@ -118,11 +117,10 @@ class Controll(Node):
         else:
             out.drive.steering_angle = output_s
 
-        out.drive.speed = (1-1.5*np.sin(ds/2)**2)*self.Vg
+        out.drive.speed = (1-2.5*np.sin(ds/2)**2)*self.Vg
         if out.drive.speed < 0.5:
             out.drive.speed = 0.5
         self.pub.publish(out)
-        self.get_logger().info(f'OUT:{out.drive.steering_angle}')
         self.dsp=ds
     
         
