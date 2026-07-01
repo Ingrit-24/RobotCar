@@ -7,13 +7,17 @@ def generate_launch_description():
             package='rc_controll',
             executable='Kalman2_Node',
             name='KAL2',
-            output='screen'
+            output='screen',
+            prefix = ['taskset -c 2'],
+            emulate_tty = True
         ),
         
         Node(
             package='rc_controll',
             executable='Ecef2Enu_Node',
             name='ECEF2ENU',
-            output='screen'
+            output='screen',
+            prefix = ['taskset -c 2'],
+            emulate_tty = True
         )
     ])
