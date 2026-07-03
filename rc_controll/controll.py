@@ -16,8 +16,7 @@ class Controll(Node):
         self.KP = 0.14
         self.KI = 0.0003
         self.KD = 0.0002
-        self.Vg = 3.0
-        
+        self.Vg = 2.5
         
         self.inte = 0
         self.rad25 = np.deg2rad(25)
@@ -80,15 +79,15 @@ class Controll(Node):
         norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
-        if minidx > self.route_max - 8:
-            goalidx = 7-(self.route_max - minidx)
+        if minidx > self.route_max - 9:
+            goalidx = 8-(self.route_max - minidx)
         else:
-            goalidx = minidx + 7
+            goalidx = minidx + 8
 
-        if minidx > self.route_max - 12:
-            goalidxb = 11-(self.route_max - minidx)
+        if minidx > self.route_max - 10:
+            goalidxb = 9-(self.route_max - minidx)
         else:
-            goalidxb = minidx + 11
+            goalidxb = minidx + 9
         
         routex = self.route[goalidx] - self.robo_pos 
         goaltheta = np.arctan2(routex[1],routex[0])
