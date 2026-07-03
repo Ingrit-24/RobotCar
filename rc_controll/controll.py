@@ -13,10 +13,10 @@ class Controll(Node):
     def __init__(self):
         super().__init__('Controll_Node')
 
-        self.KP = 0.17
-        self.KI = 0.0007
-        self.KD = 0.00035
-        self.Vg = 1.5
+        self.KP = 0.14
+        self.KI = 0.0003
+        self.KD = 0.0002
+        self.Vg = 3.0
         
         
         self.inte = 0
@@ -80,17 +80,28 @@ class Controll(Node):
         norms = np.linalg.norm(self.route[:,:2] - self.robo_pos[:2],axis=1)
         minidx = np.argmin(norms)
         
-        if minidx > self.route_max - 9:
-            goalidx = 8-(self.route_max - minidx)
+        if minidx > self.route_max - 8:
+            goalidx = 7-(self.route_max - minidx)
         else:
-            goalidx = minidx + 8
+            goalidx = minidx + 7
+
+        if minidx > self.route_max - 12:
+            goalidxb = 11-(self.route_max - minidx)
+        else:
+            goalidxb = minidx + 11
         
         routex = self.route[goalidx] - self.robo_pos 
         goaltheta = np.arctan2(routex[1],routex[0])
+
+        routexb = self.route[goalidxb] - self.robo_pos
+        goalthetab = np.arctan2(routexb[1],routexb[0])
+
         self.theta = np.arctan2(self.robo_vel[1],self.robo_vel[0])
         
         
         ds = np.arctan2(np.sin(goaltheta - self.theta), np.cos(goaltheta - self.theta))
+        dsb = np.arctan2(np.sin(goalthetab - self.theta), np.cos(goalthetab - self.theta))
+
         dsd = (ds-self.dsp)/self.delta_t
         
         self.inte += ds * self.delta_t
@@ -117,7 +128,7 @@ class Controll(Node):
         else:
             out.drive.steering_angle = output_s
 
-        out.drive.speed = (1-2.5*np.sin(ds/2)**2)*self.Vg
+        out.drive.speed = (1-3.5*np.sin(dsb/2)**2)*self.Vg
         if out.drive.speed < 0.5:
             out.drive.speed = 0.5
         self.pub.publish(out)

@@ -8,7 +8,7 @@ def generate_launch_description():
             executable='Kalman2_Node',
             name='KAL2',
             output='screen',
-            prefix = ['taskset -c 2'],
+            prefix = ['taskset -c 3'],
             emulate_tty = True
         ),
         
@@ -17,7 +17,7 @@ def generate_launch_description():
             executable='Ecef2Enu_Node',
             name='ECEF2ENU',
             output='screen',
-            prefix = ['taskset -c 2'],
+            prefix = ['taskset -c 3'],
             emulate_tty = True
         )
     ])
