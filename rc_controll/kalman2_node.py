@@ -10,7 +10,7 @@ class KalmanNode(Node):
     def __init__(self):
         super().__init__('Kalman_Node')
 
-        self.subscription = self.create_subscription(GnssSolution,'/gnss/solution',self.kalmanfilter,10)
+        self.subscription = self.create_subscription(GnssSolution,'/gnss/nmea_solution',self.kalmanfilter,10)
         self.pub_pos = self.create_publisher(Point,'/Kalman_out_pos',10)
         self.pub_vel = self.create_publisher(Point,'/Kalman_out_vel',10)
         self.pub_dt = self.create_publisher(Float64,'/Kalman_out_dt',10)
