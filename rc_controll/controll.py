@@ -14,9 +14,9 @@ class Controll(Node):
         super().__init__('Controll_Node')
 
         self.KP = 0.14
-        self.KI = 0.0003
+        self.KI = 0.0005
         self.KD = 0.00022
-        self.Vg = 2.5
+        self.Vg = 3.0
         
         self.inte = 0
         self.rad25 = np.deg2rad(25)

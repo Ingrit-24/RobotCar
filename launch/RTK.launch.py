@@ -32,29 +32,29 @@ def generate_launch_description():
             name='ubx_driver_node',
             output='log',
             parameters=[ubx_file2],
-            prefix = ['taskset -c 3'],
+            prefix = ['taskset -c 2,3'],
             emulate_tty = True
         ),
-        Node(
-            package='gnss_ros_standardization',
-            executable='real_time_kinematic',
-            name='real_time_kinematic',
-            output='screen',
-            parameters=[yaml_file_path],
-            prefix = ['taskset -c 2,0'],
-            emulate_tty = True
-        ),
-        Node(
-            package='gnss_ros_standardization',
-            executable='rtcm_decoder_node',
-            name='rtcm_decoder_node',
-            output='log',
-            parameters=[{
-                'stream_path': ntrip,
-                'observation_topic':"/base/gnss/observation",
-                'ephemeris_topic':"/base/gnss/ephemeris",
-            }],
-            prefix = ['taskset -c 1'],
-            emulate_tty = True
-        ),
+#        Node(
+#            package='gnss_ros_standardization',
+#            executable='real_time_kinematic',
+#            name='real_time_kinematic',
+#            output='screen',
+#            parameters=[yaml_file_path],
+#            prefix = ['taskset -c 2,0'],
+#            emulate_tty = True
+#        ),
+#        Node(
+#            package='gnss_ros_standardization',
+#            executable='rtcm_decoder_node',
+#            name='rtcm_decoder_node',
+#            output='log',
+#            parameters=[{
+#                'stream_path': ntrip,
+#                'observation_topic':"/base/gnss/observation",
+#                'ephemeris_topic':"/base/gnss/ephemeris",
+#            }],
+#            prefix = ['taskset -c 1'],
+#            emulate_tty = True
+#        ),
     ])
