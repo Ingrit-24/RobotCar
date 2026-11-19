@@ -32,6 +32,7 @@ setup(
         'Kalman2_Node = rc_controll.kalman2_node:main',
         'Ecef2Enu_Node = rc_controll.ecef2enu:main',
         'Controll_Node = rc_controll.controll:main',
+        'State_Node = rc_controll.state:main',
         'circle_publisher = rc_controll.dammy:main',
         ],
     },

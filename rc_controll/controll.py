@@ -111,7 +111,7 @@ class Controll(Node):
             self.inte = -8
 
         output_s = ds * self.KP + self.inte * self.KI + dsd * self.KD
-        self.get_logger().info(f'P:{ds * self.KP},I:{self.inte * self.KI},D:{dsd * self.KD}')
+        #self.get_logger().info(f'P:{ds * self.KP},I:{self.inte * self.KI},D:{dsd * self.KD}')
         
         if output_s > self.rad25:
             output_s = self.rad25
